@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import Anthropic from "@anthropic-ai/sdk";
 
-const MODEL = "claude-haiku-5-5";
+const MODEL = process.env.ANTHROPIC_MODEL || "claude-haiku-5-5";
 const MAX_MESSAGE_LENGTH = 2000;
 const MAX_REPLY_LENGTH = 8000;
 const MAX_MESSAGES = 20;
