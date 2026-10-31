@@ -24,12 +24,13 @@ You are helping a beginner build a personal website. After each step, explain wh
 
 - The server code goes in `api/chat.js`, a Vercel Function using `export async function POST(request)`.
 - Return JSON from the function using `Response.json(...)`.
-- Use the official `@anthropic-ai/sdk` package. It is already in `package.json`, so do not change its version.
-- Create the client with `new Anthropic()`, inside the function, so it reads `ANTHROPIC_API_KEY` from the environment.
-- Use exactly this model ID: `claude-haiku-5-5`. Do not change it.
-- Set `max_tokens` to 1024 and `output_config` to `{ effort: "low" }`.
+- The function reads `API_KEY`, `API_TYPE`, `BASE_URL` and `MODEL` from the environment. Never hard-code them.
+- `API_TYPE` is `anthropic-messages` (the default), `openai-chat-completions` or `openai-responses`.
+- For `anthropic-messages`, use the official `@anthropic-ai/sdk` package. It is already in `package.json`, so do not change its version. For the OpenAI types, use `fetch`, so no other package is needed.
+- The default model is `claude-haiku-5-5`. Change it with `MODEL`, not in the code.
+- Limit replies to 1024 tokens. For `anthropic-messages`, also set `output_config` to `{ effort: "low" }`.
 - Do not send `temperature`, `top_p`, `top_k` or `thinking`.
-- Join the text blocks from `response.content`, because the first block may not be text.
+- Read only the text from a reply, because the first block may not be text.
 - Keep the system prompt in `api/system-prompt.txt` so I can edit it.
 - Load it with `readFileSync(new URL("./system-prompt.txt", import.meta.url), "utf8")`.
 - The chat must remember the conversation. The browser sends `{ messages: [...] }` with every `user` and `assistant` turn, and the function passes the latest 20 to Claude.
