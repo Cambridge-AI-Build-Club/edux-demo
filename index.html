@@ -166,6 +166,98 @@
         font-weight: 700;
       }
 
+      a {
+        color: var(--rubric);
+      }
+
+      a:focus-visible,
+      button:focus-visible,
+      textarea:focus-visible {
+        outline: 2px solid var(--rubric);
+        outline-offset: 2px;
+      }
+
+      /* A loose sheet on the desk: the reader's own notes beside the book. */
+      .leaf {
+        max-width: 44rem;
+        margin: 2.5rem auto 0;
+        padding: 2.5rem 1.5rem;
+        background: var(--page);
+        box-shadow: 0 0.75rem 2rem rgba(6, 16, 12, 0.5);
+      }
+
+      .leaf h2 {
+        margin-top: 0;
+      }
+
+      #chat-log p {
+        margin-bottom: 1.25rem;
+        white-space: pre-wrap;
+      }
+
+      #chat-log p::before {
+        display: block;
+        font-weight: 700;
+      }
+
+      #chat-log .guide::before {
+        content: "Guide";
+        color: var(--rubric);
+      }
+
+      #chat-log .visitor {
+        margin-left: 2rem;
+        font-style: italic;
+      }
+
+      #chat-log .visitor::before {
+        content: "You";
+        font-style: normal;
+      }
+
+      #chat-form {
+        margin-top: 1.5rem;
+      }
+
+      #chat-form label {
+        display: block;
+        margin-bottom: 0.25rem;
+        font-weight: 700;
+      }
+
+      #chat-form textarea {
+        display: block;
+        width: 100%;
+        padding: 0.65rem 0.75rem;
+        border: 1px solid var(--ink);
+        border-radius: 2px;
+        background: #f7f8f1;
+        color: var(--ink);
+        font: inherit;
+        resize: vertical;
+      }
+
+      #chat-form button {
+        margin-top: 0.75rem;
+        padding: 0.45rem 1.5rem;
+        border: 0;
+        border-radius: 2px;
+        background: var(--ink);
+        color: var(--page);
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      #chat-form button:hover {
+        background: var(--rubric);
+      }
+
+      #chat-form button:disabled {
+        opacity: 0.55;
+        cursor: wait;
+      }
+
       footer {
         max-width: 66rem;
         margin: 1.5rem auto 0;
@@ -281,12 +373,84 @@
         </ol>
 
         <h2>Tell me if I'm wrong</h2>
-        <p>If you think print made people literate overnight, I would like to hear why.</p>
+        <p>
+          If you think print made people literate overnight, I would like to hear why.
+          <a href="#guide">Talk it through with the guide.</a>
+        </p>
       </section>
     </main>
+
+    <section class="leaf" id="guide" aria-labelledby="guide-title">
+      <h2 id="guide-title">Talk it through with the guide</h2>
+      <p class="note">The guide is an AI. It asks more than it answers, and it can get facts wrong. Leave out anything private.</p>
+
+      <div id="chat-log" aria-live="polite">
+        <p class="guide">A printed book sits in front of someone who was never taught to read. What would have to change before that book mattered to them?</p>
+      </div>
+
+      <form id="chat-form">
+        <label for="chat-input">Your reply</label>
+        <textarea id="chat-input" rows="3" maxlength="2000" required></textarea>
+        <button type="submit">Send</button>
+      </form>
+    </section>
 
     <footer>
       <p>Ada is a fictional student, made up for a workshop.</p>
     </footer>
+
+    <script>
+      const log = document.getElementById("chat-log");
+      const form = document.getElementById("chat-form");
+      const input = document.getElementById("chat-input");
+      const button = form.querySelector("button");
+      const conversation = [];
+
+      function show(text, className) {
+        const line = document.createElement("p");
+        line.textContent = text;
+        line.className = className;
+        log.append(line);
+        line.scrollIntoView({ block: "nearest" });
+        return line;
+      }
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const text = input.value.trim();
+        if (!text) return;
+
+        input.value = "";
+        button.disabled = true;
+        show(text, "visitor");
+        const answer = show("Thinking...", "guide");
+        conversation.push({ role: "user", content: text });
+
+        try {
+          const response = await fetch("/api/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ messages: conversation }),
+          });
+          const data = await response.json();
+          if (!response.ok) {
+            answer.textContent = data.error;
+            conversation.pop();
+            input.value = text;
+          } else {
+            answer.textContent = data.reply;
+            conversation.push({ role: "assistant", content: data.reply });
+          }
+        } catch {
+          // Only the deployed site has the chat function, so a preview ends up here.
+          answer.textContent = "The guide could not be reached. It only works on the deployed site.";
+          conversation.pop();
+          input.value = text;
+        } finally {
+          button.disabled = false;
+          input.focus();
+        }
+      });
+    </script>
   </body>
 </html>

@@ -21,6 +21,17 @@ test("the page says Ada is fictional", () => {
   assert.match(page, /fictional/);
 });
 
-test("the page contains no API key", () => {
-  assert.doesNotMatch(page, /sk-ant-/);
+test("the chat box has a label", () => {
+  assert.match(page, /<label for="chat-input">/);
+  assert.match(page, /<textarea id="chat-input"/);
+});
+
+test("the guide has a system prompt", () => {
+  assert.match(readFileSync("api/system-prompt.txt", "utf8"), /Socratic guide/);
+});
+
+test("the site contains no API key", () => {
+  for (const file of ["index.html", "api/chat.js", "api/system-prompt.txt"]) {
+    assert.doesNotMatch(readFileSync(file, "utf8"), /sk-ant-/, file);
+  }
 });
