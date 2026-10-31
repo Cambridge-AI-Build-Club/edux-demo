@@ -5,34 +5,288 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Who could read? Ada's history notes</title>
     <meta name="description" content="How the printing press changed who could read, by Ada, a fictional history student." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,700;1,400&family=IM+Fell+English&family=UnifrakturMaguntia&display=swap"
+    />
     <style>
+      :root {
+        --desk: #20382f;
+        --desk-lit: #2d4c40;
+        --page: #eceee4;
+        --page-fold: #d3d6c8;
+        --ink: #1e1b18;
+        --metal: #4f5759;
+        --metal-face: #dfe2d9;
+        --rubric: #8c2f24;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        background: var(--desk);
+      }
+
       body {
-        max-width: 38rem;
-        margin: 3rem auto;
-        padding: 0 1.25rem;
-        background: #eceee4;
-        color: #1e1b18;
-        font-family: Georgia, "Times New Roman", serif;
-        line-height: 1.6;
+        margin: 0;
+        padding: 3rem 1rem 2rem;
+        min-height: 100vh;
+        background: radial-gradient(70rem 42rem at 50% 0, var(--desk-lit), var(--desk));
+        background-repeat: no-repeat;
+        color: var(--ink);
+        font-family: Alegreya, Georgia, serif;
+        font-size: 1.2rem;
+        line-height: 1.55;
+      }
+
+      /* The headline as it stands in the press: metal type, in mirror image. */
+      .forme {
+        position: relative;
+        z-index: 1;
+        max-width: 44rem;
+        margin: 0 auto;
+        container-type: inline-size;
+      }
+
+      .line {
+        display: grid;
+        grid-template-columns: repeat(15, minmax(0, 1fr));
+        gap: 1px;
+        transform: scaleX(-1);
+      }
+
+      .line span {
+        position: relative;
+        display: grid;
+        place-items: center;
+        aspect-ratio: 5 / 8;
+        background: var(--metal);
+        box-shadow: inset 0 -0.25cqi 0 rgba(0, 0, 0, 0.35);
+        color: var(--metal-face);
+        font-family: UnifrakturMaguntia, "Old English Text MT", serif;
+        font-size: 5cqi;
+        line-height: 1;
+      }
+
+      /* The nick: the groove a compositor feels for to set each piece the right way up. */
+      .line span::after {
+        content: "";
+        position: absolute;
+        inset: auto 0 12% 0;
+        height: 1px;
+        background: rgba(0, 0, 0, 0.4);
+      }
+
+      /* Blank spacers stand lower than the letters, so they never print. */
+      .line .quad {
+        background: #39413f;
+      }
+
+      .book {
+        display: grid;
+        max-width: 66rem;
+        margin: 0 auto;
+        background: var(--page);
+        box-shadow: 0 1.5rem 3rem rgba(6, 16, 12, 0.55);
+      }
+
+      .page {
+        padding: 3rem 1.5rem 2.5rem;
+      }
+
+      .page > :first-child {
+        margin-top: 0;
+      }
+
+      .page > :last-child {
+        margin-bottom: 0;
+      }
+
+      h1,
+      h2 {
+        font-family: "IM Fell English", Georgia, serif;
+        font-weight: 400;
+        line-height: 1.1;
+      }
+
+      h1 {
+        margin: 0 0 1rem;
+        font-size: clamp(2.8rem, 11vw, 4.4rem);
+      }
+
+      h2 {
+        margin: 2rem 0 0.75rem;
+        font-size: 1.8rem;
+      }
+
+      p {
+        max-width: 34rem;
+        margin: 0 0 1rem;
+      }
+
+      .intro {
+        font-size: 1.35rem;
+        line-height: 1.4;
+      }
+
+      .note {
+        font-size: 1.02rem;
+        font-style: italic;
+      }
+
+      /* The opening letter, in red, where a rubricator would have added it by hand. */
+      .opening::first-letter {
+        float: left;
+        margin: 0.08em 0.08em 0 0;
+        color: var(--rubric);
+        font-family: "IM Fell English", Georgia, serif;
+        font-size: 3.3em;
+        line-height: 0.8;
+      }
+
+      .timeline {
+        margin: 0 0 1.5rem;
+        padding: 0;
+        list-style: none;
+      }
+
+      .timeline li {
+        display: grid;
+        grid-template-columns: 4.6rem 1fr;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+      }
+
+      .timeline time {
+        color: var(--rubric);
+        font-weight: 700;
+      }
+
+      footer {
+        max-width: 66rem;
+        margin: 1.5rem auto 0;
+        color: var(--page);
+        font-size: 1rem;
+        text-align: center;
+      }
+
+      footer p {
+        max-width: none;
+        margin: 0;
+      }
+
+      @media (min-width: 56rem) {
+        .book {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .page {
+          padding: 4rem 3.5rem 3.5rem;
+        }
+
+        .verso {
+          background: linear-gradient(to left, var(--page-fold), var(--page) 3rem);
+        }
+
+        .recto {
+          background: linear-gradient(to right, var(--page-fold), var(--page) 3rem);
+        }
+      }
+
+      /* One moment: the type comes down onto the page, and the line is printed. */
+      @media (prefers-reduced-motion: no-preference) {
+        .forme {
+          animation: press 1.5s ease-in-out 0.4s both;
+        }
+
+        h1 {
+          animation: ink 0.8s ease-out 1s both;
+        }
+
+        @keyframes press {
+          0%,
+          100% {
+            transform: none;
+          }
+          45%,
+          55% {
+            transform: translateY(1rem);
+          }
+        }
+
+        @keyframes ink {
+          from {
+            opacity: 0.3;
+          }
+          to {
+            opacity: 1;
+          }
+        }
       }
     </style>
   </head>
   <body>
-    <main>
-      <h1>Who could read?</h1>
-      <p>I'm Ada, and I study history. This page asks how one machine changed the answer.</p>
+    <div class="forme" aria-hidden="true">
+      <div class="line">
+        <span>W</span><span>h</span><span>o</span><span class="quad"></span><span>c</span><span>o</span><span>u</span
+        ><span>l</span><span>d</span><span class="quad"></span><span>r</span><span>e</span><span>a</span><span>d</span
+        ><span>?</span>
+      </div>
+    </div>
 
-      <h2>Copying gave way to printing</h2>
-      <p>
-        Before the press, each book was copied by hand, and most Europeans could not read one.
-        Around 1450 in Mainz, Johannes Gutenberg put movable metal type to work in a press, and the
-        same page could be printed again and again.
-      </p>
-      <p>
-        Print did not teach anyone to read. It gave more people something to read, and over the
-        following centuries that changed who could take part in an argument. Access to knowledge
-        shapes who gets a voice.
-      </p>
+    <main class="book">
+      <article class="page verso">
+        <h1>Who could read?</h1>
+        <p class="intro">I'm Ada, and I study history. This page asks how one machine changed the answer.</p>
+        <p class="note">The metal type above says the same thing, in mirror image. Only the printed page reads the right way round.</p>
+
+        <p class="opening">
+          Before the press, each book was copied by hand, and most Europeans could not read one.
+          Around 1450 in Mainz, Johannes Gutenberg put movable metal type to work in a press, and the
+          same page could be printed again and again.
+        </p>
+        <p>
+          Print did not teach anyone to read. It gave more people something to read, and over the
+          following centuries that changed who could take part in an argument. Access to knowledge
+          shapes who gets a voice.
+        </p>
+      </article>
+
+      <section class="page recto" aria-labelledby="spread">
+        <h2 id="spread">How print spread</h2>
+        <ol class="timeline">
+          <li>
+            <time>c. 1450</time>
+            <span>Gutenberg's workshop in Mainz starts printing with movable metal type.</span>
+          </li>
+          <li>
+            <time>c. 1455</time>
+            <span>The Gutenberg Bible is finished, in Latin. Around 180 copies are made.</span>
+          </li>
+          <li>
+            <time datetime="1476">1476</time>
+            <span>William Caxton sets up England's first press at Westminster, and soon prints Chaucer in English.</span>
+          </li>
+          <li>
+            <time datetime="1517">1517</time>
+            <span>
+              Martin Luther's Ninety-five Theses are reprinted in several cities within months. His
+              later German pamphlets reach readers who have no Latin.
+            </span>
+          </li>
+        </ol>
+
+        <h2>Tell me if I'm wrong</h2>
+        <p>If you think print made people literate overnight, I would like to hear why.</p>
+      </section>
     </main>
+
+    <footer>
+      <p>Ada is a fictional student, made up for a workshop.</p>
+    </footer>
   </body>
 </html>
